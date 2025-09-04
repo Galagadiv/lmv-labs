@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DVD Screensaver</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background: black; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<script>
+let img;
+let x, y;
+let xSpeed = 4;
+let ySpeed = 3;
+let dvdColor;
+
+function preload() {
+  img = loadImage("assets/logo.webp"); // твоя картинка
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  x = random(width - 200);
+  y = random(height - 100);
+  dvdColor = color(255, 0, 0); // початковий колір тексту
+}
+
+function draw() {
+  background(0);
+
+  // малюємо картинку
+  tint(dvdColor); // забарвлення картинки
+  image(img, x, y, 150, 80);
+
+  // малюємо текст під картинкою
+  noStroke();
+  fill(dvdColor);
+  textAlign(CENTER, TOP);
+  textSize(24);
+  text("Purshak Illa IPZ-42", x + 75, y + 85);
+
+  // рух
+  x += xSpeed;
+  y += ySpeed;
+
+  // відбиття від меж
+  if (x <= 0 || x + 150 >= width) {
+    xSpeed *= -1;
+    changeColor();
+  }
+  if (y <= 0 || y + 80 >= height) {
+    ySpeed *= -1;
+    changeColor();
+  }
+}
+
+function changeColor() {
+  dvdColor = color(random(255), random(255), random(255));
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>
