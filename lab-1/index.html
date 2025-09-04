@@ -10,14 +10,19 @@
   </style>
 </head>
 <body>
-<script src="render.js"></script>
 <script>
 let img;
 let x, y;
 let xSpeed = 1.5;
-let ySpeed = 1;
+let ySpeed = 1.0;
 let imgWidth = 150;
-let imgHeight;
+let imgHeight = 150;
+
+const aboutProgram = "Screen saver v1.3";
+const author = "Purshak Illa IPZ-42";
+
+const labelSize = 24;
+let labelH = 0;
 
 function preload() {
   img = loadImage("assets/logo.webp", loaded => {
@@ -27,31 +32,38 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  x = random(width - imgWidth);
-  y = random(height - imgHeight);
+  textSize(labelSize);
+  textAlign(CENTER, TOP);
+  noStroke();
+  labelH = textAscent() + textDescent() + 6;
+
+  x = random(0, max(1, width - imgWidth));
+  y = random(0, max(1, height - imgHeight - labelH));
 }
 
 function draw() {
-  background(0); // чорний фон
+  background(0);
 
   image(img, x, y, imgWidth, imgHeight);
 
-  noStroke();
   fill(255);
-  textAlign(CENTER, TOP);
-  textSize(24);
-  text("Purshak Illa IPZ-42", x + imgWidth / 2, y + imgHeight + 5);
+  text(aboutProgram, x + imgWidth / 2, y + imgHeight + 5);
+  text(author, x + imgWidth / 2, y + imgHeight + 29);
 
   x += xSpeed;
   y += ySpeed;
 
   if (x <= 0 || x + imgWidth >= width) xSpeed *= -1;
-  if (y <= 0 || y + imgHeight >= height) ySpeed *= -1;
+  if (y <= 0 || y + imgHeight + labelH >= height) ySpeed *= -1;
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  
+  x = constrain(x, 0, max(0, width - imgWidth));
+  y = constrain(y, 0, max(0, height - imgHeight - labelH));
 }
 </script>
+
 </body>
 </html>

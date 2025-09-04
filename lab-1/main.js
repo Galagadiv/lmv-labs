@@ -1,28 +1,48 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, powerMonitor } = require('electron');
+const path = require('path');
+
+const IDLE_THRESHOLD_SEC = 5; 
+const POLL_MS = 500;           
 
 let win;
+let intervalId;
 
-app.on('ready', () => {
+function createWindow() {
   win = new BrowserWindow({
+    show: false,              
     fullscreen: true,
     frame: false,
     alwaysOnTop: true,
-    backgroundColor: '#000000', // чорний фон
+    backgroundColor: '#000000',
+    skipTaskbar: true,
+    focusable: false,        
+    transparent: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: false,
+      contextIsolation: true
     }
   });
 
-  win.loadFile(__dirname + '/index.html');
-  win.hide(); // спочатку прихований
-});
+  win.setIgnoreMouseEvents(true, { forward: true }); 
 
-// ховаємо / показуємо екран
-ipcMain.on("hide-screensaver", () => {
-  if (win && !win.isDestroyed()) win.hide();
-});
+  win.loadFile(path.join(__dirname, 'index.html'));
 
-ipcMain.on("show-screensaver", () => {
-  if (win && !win.isDestroyed()) win.show();
+  intervalId = setInterval(() => {
+    const idleSec = powerMonitor.getSystemIdleTime(); 
+    if (idleSec >= IDLE_THRESHOLD_SEC) {
+      if (!win.isVisible() && !win.isDestroyed()) win.showInactive();
+    } else {
+      if (win.isVisible() && !win.isDestroyed()) win.hide();
+    }
+  }, POLL_MS);
+
+  powerMonitor.on('resume', () => win.hide());
+  powerMonitor.on('unlock-screen', () => win.hide());
+}
+
+app.whenReady().then(createWindow);
+
+app.on('window-all-closed', () => {
+  if (intervalId) clearInterval(intervalId);
+  app.quit();
 });
