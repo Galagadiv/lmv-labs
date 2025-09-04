@@ -10,55 +10,43 @@
   </style>
 </head>
 <body>
+<script src="render.js"></script>
 <script>
 let img;
 let x, y;
-let xSpeed = 4;
-let ySpeed = 3;
-let dvdColor;
+let xSpeed = 1.5;
+let ySpeed = 1;
+let imgWidth = 150;
+let imgHeight;
 
 function preload() {
-  img = loadImage("assets/logo.webp"); // твоя картинка
+  img = loadImage("assets/logo.webp", loaded => {
+    imgHeight = (loaded.height / loaded.width) * imgWidth;
+  });
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  x = random(width - 200);
-  y = random(height - 100);
-  dvdColor = color(255, 0, 0); // початковий колір тексту
+  x = random(width - imgWidth);
+  y = random(height - imgHeight);
 }
 
 function draw() {
-  background(0);
+  background(0); // чорний фон
 
-  // малюємо картинку
-  tint(dvdColor); // забарвлення картинки
-  image(img, x, y, 150, 80);
+  image(img, x, y, imgWidth, imgHeight);
 
-  // малюємо текст під картинкою
   noStroke();
-  fill(dvdColor);
+  fill(255);
   textAlign(CENTER, TOP);
   textSize(24);
-  text("Purshak Illa IPZ-42", x + 75, y + 85);
+  text("Purshak Illa IPZ-42", x + imgWidth / 2, y + imgHeight + 5);
 
-  // рух
   x += xSpeed;
   y += ySpeed;
 
-  // відбиття від меж
-  if (x <= 0 || x + 150 >= width) {
-    xSpeed *= -1;
-    changeColor();
-  }
-  if (y <= 0 || y + 80 >= height) {
-    ySpeed *= -1;
-    changeColor();
-  }
-}
-
-function changeColor() {
-  dvdColor = color(random(255), random(255), random(255));
+  if (x <= 0 || x + imgWidth >= width) xSpeed *= -1;
+  if (y <= 0 || y + imgHeight >= height) ySpeed *= -1;
 }
 
 function windowResized() {
